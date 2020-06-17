@@ -82,7 +82,7 @@ class _LoginFormState extends State<LoginForm> {
   FocusNode passwordFocusNode = new FocusNode();
   // styling for form labels
   TextStyle formLabelStyle =
-  TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500);
+      TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500);
   // styling for form fields
   InputDecoration formFieldStyle = InputDecoration(
     enabledBorder: OutlineInputBorder(
