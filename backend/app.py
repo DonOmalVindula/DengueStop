@@ -3,6 +3,7 @@ from models.incident import Incident, incident_schema, incidents_schema
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_migrate import Migrate
 import jwt
 import datetime
 import os
@@ -16,9 +17,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:test1234@localhost/dengue_stop'
 SECRET_KEY = "thisisasecretkeythatmustbechangedlater"
 # init DB
-db = SQLAlchemy(app)
+db = SQLAlchemy()
+db.init_app(app)
 # init marshmallow
 ma = Marshmallow(app)
+# init flask migrate
+migrate = Migrate()
+migrate.init_app(app, db)
 
 
 def authenticate_token(token):
