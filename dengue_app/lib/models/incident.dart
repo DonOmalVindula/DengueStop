@@ -14,7 +14,7 @@ class Incident {
   String patientName;
   // if patientGender = 1, for Male
   // if patientGender = 2, for Female
-  int patientGender;
+  String patientGender;
   DateTime patientDob;
   DateTime reportedTime;
   String description;
@@ -73,7 +73,7 @@ class Incident {
         locationLat: json['location_lat'] as double,
         locationLong: json['location_long'] as double,
         patientName: json['patient_name'] as String,
-        patientGender: json['patient_gender'] as int,
+        patientGender: json['patient_gender'] as String,
         // parsing string values to DateTime format
         patientDob: DateFormat('yyyy-M-dd').parse(json['patient_dob']) as DateTime,
         reportedTime: DateTime.parse(json['reported_time']) as DateTime,

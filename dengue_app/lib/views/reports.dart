@@ -274,13 +274,13 @@ class ReportCard extends StatelessWidget {
 
   Text getPatientGenderText(gender) {
     // returns the text with styling based on the patient gender id
-    if (gender == 1) {
+    if (gender == 'm') {
       // pending verification
       return Text('Male',
           style: TextStyle(
               fontSize: 15.0,
               fontWeight: FontWeight.w700));
-    } else if (gender == 2) {
+    } else if (gender == 'f') {
       // verified
       return Text('Female',
           style: TextStyle(

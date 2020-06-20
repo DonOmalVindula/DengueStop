@@ -15,7 +15,7 @@ class Incident(db.Model):
     location_long = db.Column(db.Float, nullable=True)
     patient_name = db.Column(db.String(45), nullable=False)
     # stores the gender ID
-    patient_gender = db.Column(db.Integer, nullable=False)
+    patient_gender = db.Column(db.String(1), nullable=False)
     patient_dob = db.Column(db.DateTime, nullable=False)
     description = db.Column(db.String(200), nullable=True)
     # reported time will automatically assign at the time of creation

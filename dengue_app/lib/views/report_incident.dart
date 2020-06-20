@@ -161,12 +161,12 @@ class _IncidentFormFieldState extends State<IncidentFormField> {
   }
 
   setPatientGender(String gender) {
-    // id 2 for Female
-    // id 1 for Male
+    // f for Female
+    // m for Male
     if (gender == 'Male') {
-      incident.patientGender = 1;
+      incident.patientGender = 'm';
     } else if (gender == 'Female') {
-      incident.patientGender = 2;
+      incident.patientGender = 'f';
     }
   }
 
