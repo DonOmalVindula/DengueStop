@@ -1,5 +1,6 @@
 from database import db
 from database import ma
+# importing models for flask-migrate to realize models and create tables according to models
 from models.admin import Admin, admin_schema, admins_schema
 from models.alert import Alert, alert_schema, alerts_schema
 from models.event_status import EventStatus, event_status_schema, event_statuses_schema
@@ -10,7 +11,6 @@ from models.patient_status import PatientStatus, patient_status_schema, patient_
 from models.user import User, user_schema, users_schema
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
-
 from flask_migrate import Migrate
 import jwt
 import datetime
@@ -41,12 +41,6 @@ def authenticate_token(token):
     except jwt.InvalidTokenError:
         print('Invalid token. Please log in again.')
         return False
-
-
-@app.route('/', methods=['GET'])
-def hello_world():
-    return jsonify({'name': 'hello'})
-
 
 @app.route('/create_user', methods=['POST'])
 def create_user():
@@ -128,6 +122,7 @@ def get_user_salt():
 
 @app.route('/update_user', methods=['POST'])
 def update_user():
+    # checking for authentication
     auth_res = authenticate_token(request.headers['authorization'])
     if(auth_res != False):
         try:
@@ -160,6 +155,7 @@ def update_user():
 @app.route('/report_incident', methods=['POST'])
 # endpoint to add a new report
 def report_incident():
+    # checking for authentication
     auth_res = authenticate_token(request.headers['authorization'])
     if(auth_res != False):
         try:
@@ -198,6 +194,7 @@ def report_incident():
 
 @ app.route('/get_incidents_by_user/<int:user_id>', methods=['GET'])
 def get_incidents_by_user(user_id):
+    # checking for authentication
     auth_res = authenticate_token(request.headers['authorization'])
     if(auth_res != False and (auth_res['userId'] == user_id)):
         # returns all the incidents that was reported by the user of the user_id
