@@ -1,8 +1,16 @@
-from models.user import User, user_schema, users_schema
+from database import db
+from database import ma
+from models.admin import Admin, admin_schema, admins_schema
+from models.alert import Alert, alert_schema, alerts_schema
+from models.event_status import EventStatus, event_status_schema, event_statuses_schema
+from models.event import Event, event_schema, events_schema
 from models.incident import Incident, incident_schema, incidents_schema
+from models.org_unit import OrgUnit, org_unit_schema, org_units_schema
+from models.patient_status import PatientStatus, patient_status_schema, patient_statuses_schema
+from models.user import User, user_schema, users_schema
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+
 from flask_migrate import Migrate
 import jwt
 import datetime
@@ -16,15 +24,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:test1234@localhost/dengue_stop'
 SECRET_KEY = "thisisasecretkeythatmustbechangedlater"
-# init DB
-db = SQLAlchemy()
+# init extensions
 db.init_app(app)
-# init marshmallow
-ma = Marshmallow(app)
-# init flask migrate
-migrate = Migrate()
-migrate.init_app(app, db)
-
+ma.init_app(app)
+migrate = Migrate(app, db)
 
 def authenticate_token(token):
     try:

@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-db = SQLAlchemy()
-ma = Marshmallow()
+from database import db
+from database import ma
 
 
 class Admin(db.Model):

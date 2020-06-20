@@ -1,8 +1,6 @@
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-db = SQLAlchemy()
-ma = Marshmallow()
+from database import db
+from database import ma
 
 
 class Incident(db.Model):
@@ -19,7 +17,7 @@ class Incident(db.Model):
     patient_dob = db.Column(db.DateTime, nullable=False)
     description = db.Column(db.String(200), nullable=True)
     # reported time will automatically assign at the time of creation
-    reported_time = db.Column(db.DateTime, default=datetime.now)
+    reported_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
     reported_user_id = db.Column(db.Integer, nullable=False)
     # patient status is is set to 0 which corresponds to that the patient is pending treatment by default
     patient_status_id = db.Column(db.Integer, nullable=False, default=0)

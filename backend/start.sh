@@ -7,4 +7,4 @@ echo 'Activating Environment...'
 . venv/Scripts/activate
 
 # running app.py 
-python app.py
+python dengue.py
