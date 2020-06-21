@@ -282,7 +282,6 @@ class CustomProfileTextField extends StatefulWidget {
 
 class _CustomProfileTextFieldState extends State<CustomProfileTextField> {
   bool isDisabled = true;
-  // todo fix warnings coming from the text fields
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -446,8 +445,6 @@ class FormButton extends StatelessWidget {
           } else if (buttonType == 'cancel') {
             // routing back to home screen
             Navigator.pop(context);
-          } else {
-            // todo handle the error
           }
         },
       ),
