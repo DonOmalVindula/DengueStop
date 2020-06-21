@@ -221,6 +221,34 @@ def get_incidents_by_user(user_id):
         return make_response('Request Forbidden', 403)
 
 
+@ app.route('/get_provinces', methods=['GET'])
+def get_provinces():
+    # checking for authentication
+    auth_res = authenticate_token(request.headers['authorization'])
+    if(auth_res != False):
+        # returns all the provinces in the db
+        provinces = Province.query.all()
+        db.session.commit()
+        result = provinces_schema.dump(provinces)
+        return jsonify(result)
+    else:
+        return make_response('Request Forbidden', 403)
+        
+
+@ app.route('/get_districts', methods=['GET'])
+def get_districts():
+    # checking for authentication
+    auth_res = authenticate_token(request.headers['authorization'])
+    if(auth_res != False):
+        # returns all the procinces in the db
+        districts = District.query.all()
+        db.session.commit()
+        result = districts_schema.dump(districts)
+        return jsonify(result)
+    else:
+        return make_response('Request Forbidden', 403)
+
+
 # running server
 if __name__ == '__main__':
     app.run(debug=True)
