@@ -1,9 +1,15 @@
 from database import db
 from database import ma
-
+from sqlalchemy import ForeignKeyConstraint
 
 class Event(db.Model):
     # class corresponding to the event table in the database
+    __tablename__ = 'event'
+    __table_args__ = (
+            ForeignKeyConstraint(['status_id'], ['event_status.id']),
+            ForeignKeyConstraint(['org_id'], ['org_unit.id']),
+            ForeignKeyConstraint(['created_by'], ['admin.id']),
+            )
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(45), nullable=False)
     venue = db.Column(db.String(45), nullable=False)
@@ -16,6 +22,7 @@ class Event(db.Model):
     coordinator_contact = db.Column(db.Integer, nullable=False)
     status_id = db.Column(db.Integer, nullable=False)
     org_id = db.Column(db.Integer, nullable=False)
+    created_by = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(500), nullable=False)
 
     def __init__(self, name, venue, location_lat, location_long, date_created, start_time, duration, coordinator_name, coordinator_contact, status_id, org_id, description):

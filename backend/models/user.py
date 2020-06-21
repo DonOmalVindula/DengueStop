@@ -3,7 +3,8 @@ from database import ma
 
 
 class User(db.Model):
-    # class corresponding to the Incident Table in the database
+    # class corresponding to the User Table in the database
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     telephone = db.Column(db.String(10), unique=True, nullable=False)
     first_name = db.Column(db.String(45), nullable=False)
@@ -21,8 +22,6 @@ class User(db.Model):
         self.email = email
         self.password = password
         self.salt = salt
-
-    # def add_user():
 
 
 class UserSchema(ma.Schema):

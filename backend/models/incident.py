@@ -1,10 +1,18 @@
 from datetime import datetime
 from database import db
 from database import ma
+from sqlalchemy import ForeignKeyConstraint
 
 
 class Incident(db.Model):
     # class corresponding to the Incident Table in the database
+    __tablename__ = 'incident'
+    __table_args__ = (
+            ForeignKeyConstraint(['reported_user_id'], ['user.id']),
+            ForeignKeyConstraint(['patient_status_id'], ['patient_status.id']),
+            ForeignKeyConstraint(['org_id'], ['org_unit.id']),
+            ForeignKeyConstraint(['verified_by'], ['admin.id']),
+            )
     id = db.Column(db.Integer, primary_key=True)
     province = db.Column(db.String(45), nullable=False)
     district = db.Column(db.String(45), nullable=False)

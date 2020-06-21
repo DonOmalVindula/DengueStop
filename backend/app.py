@@ -9,6 +9,8 @@ from models.incident import Incident, incident_schema, incidents_schema
 from models.org_unit import OrgUnit, org_unit_schema, org_units_schema
 from models.patient_status import PatientStatus, patient_status_schema, patient_statuses_schema
 from models.user import User, user_schema, users_schema
+from models.province import Province, province_schema, provinces_schema
+from models.district import District, district_schema, districts_schema
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -41,6 +43,18 @@ def authenticate_token(token):
     except jwt.InvalidTokenError:
         print('Invalid token. Please log in again.')
         return False
+
+@app.route('/pre_populate_database', methods=['POST'])
+########## IMPORTANT!!! ##########
+# ONLY TO BE RUN ONCE TO POPULATE THE DATABASE AFTER INITIAL CREATION
+# ONCE THE POPULATION IS DONE. MAKE SURE TO COMMENT OR REMOVE THIS ENDPOINT
+# BEFORE RUNNING THIS ENDPOINT MAKE SURE TO PROPERLY ADD DATA NEEDED FOR PREPOPULAITON
+def pre_populate_database():
+    Province.prePopulateProvince()
+    District.prePopulateDistrict()
+    PatientStatus.prePopulatePatientStatus()
+    EventStatus.prePopulateEventStatus()
+    OrgUnit.prePopulateOrgUnit()
 
 @app.route('/create_user', methods=['POST'])
 def create_user():

@@ -1,9 +1,14 @@
 from database import db
 from database import ma
-
+from sqlalchemy import ForeignKeyConstraint
 
 class Alert(db.Model):
     # class corresponding to the alert table in the database
+    __tablename__ = 'alert'
+    __table_args__ = (
+            ForeignKeyConstraint(['org_id'], ['org_unit.id']),
+            ForeignKeyConstraint(['creator_id'], ['admin.id']),
+            )
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, nullable=False)
     alert_type = db.Column(db.String(45), nullable=False)

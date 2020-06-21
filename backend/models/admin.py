@@ -1,11 +1,14 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
+from sqlalchemy import ForeignKeyConstraint
 from database import db
 from database import ma
 
 
 class Admin(db.Model):
     # class corresponding to the admin table in the database
+    __tablename__ = 'admin'
+    __table_args__ = (
+            ForeignKeyConstraint(['org_id'], ['org_unit.id']),
+            )
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(45), unique=True, nullable=False)
     name = db.Column(db.String(45), nullable=False)
