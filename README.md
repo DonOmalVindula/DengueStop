@@ -72,10 +72,6 @@ Or, If you wish to run just the schema migrations, follow the following steps.
 
 1. Go to `backend` folder
 
-## Flask Backend
-
-1. Go to `backend` folder
-
    ```
    cd backend/
    ```
