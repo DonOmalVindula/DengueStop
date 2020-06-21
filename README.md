@@ -36,6 +36,37 @@ To be completed
    sh start.sh
    ```
 
+### Database Migration
+
+Once you have configured the connection between the flask server and the database, you could simply run `init.sh` to run flask-migrate schema migrations to create the tables and the relations according to the SQLAlchemy classes created in each python file in `models/` directory.
+
+Or, If you wish to run just the schema migrations, follow the following steps.
+
+1. Go to `backend` folder
+
+   ```
+   cd backend/
+   ```
+
+2. Start the virtualenv
+
+   ```
+   . venv/Scripts/activate
+   ```
+
+3. Commit changes to the database
+
+   ```
+   flask db migrate
+   ```
+
+4. Push the changes to the database
+   ```
+   flask db upgrade
+   ```
+
+Once the database is created, you can use the endpoint `/pre_populate_database` if you wish populate the database with any required data to start off with the application. MAKE SURE TO REMOVE it after you are done with the prepopulations.
+
 ## React Admin Panel
 
 To be completed

@@ -44,17 +44,17 @@ def authenticate_token(token):
         print('Invalid token. Please log in again.')
         return False
 
-@app.route('/pre_populate_database', methods=['POST'])
-########## IMPORTANT!!! ##########
-# ONLY TO BE RUN ONCE TO POPULATE THE DATABASE AFTER INITIAL CREATION
-# ONCE THE POPULATION IS DONE. MAKE SURE TO COMMENT OR REMOVE THIS ENDPOINT
-# BEFORE RUNNING THIS ENDPOINT MAKE SURE TO PROPERLY ADD DATA NEEDED FOR PREPOPULAITON
-def pre_populate_database():
-    Province.prePopulateProvince()
-    District.prePopulateDistrict()
-    PatientStatus.prePopulatePatientStatus()
-    EventStatus.prePopulateEventStatus()
-    OrgUnit.prePopulateOrgUnit()
+# @app.route('/pre_populate_database', methods=['POST'])
+# ########## IMPORTANT!!! ##########
+# # ONLY TO BE RUN ONCE TO POPULATE THE DATABASE AFTER INITIAL CREATION
+# # ONCE THE POPULATION IS DONE. MAKE SURE TO COMMENT OR REMOVE THIS ENDPOINT
+# # BEFORE RUNNING THIS ENDPOINT MAKE SURE TO PROPERLY ADD DATA NEEDED FOR PREPOPULAITON
+# def pre_populate_database():
+#     Province.prePopulateProvince()
+#     District.prePopulateDistrict()
+#     PatientStatus.prePopulatePatientStatus()
+#     EventStatus.prePopulateEventStatus()
+#     OrgUnit.prePopulateOrgUnit()
 
 @app.route('/create_user', methods=['POST'])
 def create_user():
