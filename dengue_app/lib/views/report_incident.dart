@@ -6,6 +6,9 @@ import 'package:dengue_app/models/incident.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dengue_app/services/incident_service.dart';
+import 'package:dengue_app/models/district.dart';
+import 'package:dengue_app/models/province.dart';
+import 'package:dengue_app/services/data_service.dart';
 
 // global styling for form labels
 TextStyle formLabelStyle =
@@ -96,12 +99,27 @@ class IncidentFormField extends StatefulWidget {
 
 class _IncidentFormFieldState extends State<IncidentFormField> {
   Incident incident = Incident();
+  Province globalSelectedProvince = Province(id: 0, name: '');
   final _incidentFormKey = GlobalKey<FormState>();
   final incidentCityController = TextEditingController();
   final patientNameController = TextEditingController();
   final incidentDescriptionController = TextEditingController();
   final incidentService = IncidentService();
   final userService = UserService();
+  final dataService = DataService();
+  District selectedDistrict;
+  Future<List<District>> districtData;
+  List<District> districtList;
+  Province selectedProvince;
+  Future<List<Province>> provinceData;
+  List<Province> provinceList;
+
+  @override
+  void initState() {
+    super.initState();
+    provinceData = dataService.getProvinces();
+    districtData = dataService.getDistricts();
+  }
 
   showSaveConfirmation(BuildContext context) {
     Widget cancelButton = FlatButton(
@@ -144,12 +162,16 @@ class _IncidentFormFieldState extends State<IncidentFormField> {
     incident.locationLong = long;
   }
 
-  setIncidentProvince(String province) {
-    incident.province = province;
+  setIncidentProvince(Province province) {
+    incident.province = province.name;
+    setState(() {
+      // this will trigger a rebuild of the parent which causes the district dropdown to update
+      globalSelectedProvince = province;
+    });
   }
 
-  setIncidentDistrict(String district) {
-    incident.district = district;
+  setIncidentDistrict(District district) {
+    incident.district = district.name;
   }
 
   setIncidentCity(String city) {
@@ -274,14 +296,40 @@ class _IncidentFormFieldState extends State<IncidentFormField> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Expanded(
-                  child: ProvinceDropdown(
-                    setProvinceFunction: setIncidentProvince,
-                  ),
+                  child: FutureBuilder<List<Province>>(
+                      future: provinceData,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          provinceList = snapshot.data;
+                          return ProvinceDropdown(
+                            setProvinceFunction: setIncidentProvince,
+                            provinceList: provinceList,
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        } else {
+                          return Text("Something else");
+                        }
+                      }),
                 ),
                 SizedBox(width: 20.0),
+                // todo handle null validation for dynamic district and province dropdowns
                 Expanded(
-                    child: DistrictDropdown(
-                        setDistrictFunction: setIncidentDistrict))
+                    child: FutureBuilder<List<District>>(
+                        future: districtData,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            districtList = snapshot.data;
+                            return DistrictDropdown(
+                                selectedProvince: globalSelectedProvince,
+                                districtList: districtList,
+                                setDistrictFunction: setIncidentDistrict);
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          } else {
+                            return Text("Something else");
+                          }
+                        }))
               ],
             ),
             // province dropdown
@@ -363,7 +411,6 @@ class CustomDropdown extends StatefulWidget {
   final List<String> dropdownData;
   final selectFunction;
   final String label;
-  // todo find a way to make selectedData final
   String selectedData;
   CustomDropdown(
       {Key key,
@@ -378,10 +425,10 @@ class CustomDropdown extends StatefulWidget {
 }
 
 class _CustomDropdownState extends State<CustomDropdown> {
+  // todo get rid of custom dropdown
   String selectedData = '';
   @override
   Widget build(BuildContext context) {
-    // todo better approach to handle selected data other than widget.selectedData
     return DropdownButtonFormField<String>(
       value: selectedData,
       icon: Icon(Icons.keyboard_arrow_down),
@@ -402,7 +449,6 @@ class _CustomDropdownState extends State<CustomDropdown> {
           widget.selectFunction(newValue);
         });
       },
-      // todo add province data to dropdown
       items: widget.dropdownData.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -415,51 +461,86 @@ class _CustomDropdownState extends State<CustomDropdown> {
 
 class ProvinceDropdown extends StatefulWidget {
   final setProvinceFunction;
-  ProvinceDropdown({Key key, this.setProvinceFunction}) : super(key: key);
+  final List<Province> provinceList;
+  ProvinceDropdown({Key key, this.setProvinceFunction, this.provinceList})
+      : super(key: key);
 
   @override
   _ProvinceDropdownState createState() => _ProvinceDropdownState();
 }
 
 class _ProvinceDropdownState extends State<ProvinceDropdown> {
-  String selectedProvince = "Western";
-  List<String> provinceDropdown = [
-    '',
-    'Western',
-    'Central',
-    'North Eastern',
-    'Southern'
-  ];
-  // todo retrieve provinces
+  Province selectedProvince;
   @override
   Widget build(BuildContext context) {
-    return CustomDropdown(
-        dropdownData: provinceDropdown,
-        selectedData: selectedProvince,
-        selectFunction: widget.setProvinceFunction,
-        label: 'Province');
+    return DropdownButtonFormField<Province>(
+      value: selectedProvince,
+      icon: Icon(Icons.keyboard_arrow_down),
+      iconSize: 30,
+      elevation: 16,
+      decoration:
+          InputDecoration(labelText: 'Province', labelStyle: formLabelStyle),
+      validator: (value) => selectedProvince.id == 0 ? 'Required' : null,
+      onChanged: (Province newValue) {
+        setState(() {
+          selectedProvince = newValue;
+          widget.setProvinceFunction(newValue);
+        });
+      },
+      items:
+          widget.provinceList.map<DropdownMenuItem<Province>>((Province value) {
+        return DropdownMenuItem<Province>(
+          value: value,
+          child: Text(value.name),
+        );
+      }).toList(),
+    );
   }
 }
 
 class DistrictDropdown extends StatefulWidget {
+  final List<District> districtList;
   final setDistrictFunction;
-  DistrictDropdown({Key key, this.setDistrictFunction}) : super(key: key);
+  final Province selectedProvince;
+  DistrictDropdown(
+      {Key key,
+      this.setDistrictFunction,
+      this.districtList,
+      this.selectedProvince})
+      : super(key: key);
 
   @override
   _DistrictDropdownState createState() => _DistrictDropdownState();
 }
 
 class _DistrictDropdownState extends State<DistrictDropdown> {
-  String selectedDistrict = "Colombo";
-  List<String> districtDropdown = ['', 'Colombo', 'Kelaniya', 'Galle', 'Kandy'];
-  // todo retrieve districts
+  District selectedDistrict;
   @override
   Widget build(BuildContext context) {
-    return CustomDropdown(
-      dropdownData: districtDropdown,
-      selectedData: selectedDistrict,
-      selectFunction: widget.setDistrictFunction,
-      label: 'District',
+    return DropdownButtonFormField<District>(
+      value: selectedDistrict,
+      icon: Icon(Icons.keyboard_arrow_down),
+      iconSize: 30,
+      elevation: 16,
+      decoration:
+          InputDecoration(labelText: 'District', labelStyle: formLabelStyle),
+      validator: (value) => selectedDistrict.id.isNaN ? 'Required' : null,
+      style: TextStyle(color: Colors.black, fontFamily: 'Raleway'),
+      onChanged: (District newValue) {
+        setState(() {
+          selectedDistrict = newValue;
+          widget.setDistrictFunction(newValue);
+        });
+      },
+      // returning districts only belonging to the selected province
+      items: widget.districtList
+          .where((element) => element.provinceId == widget.selectedProvince.id)
+          .map<DropdownMenuItem<District>>((District value) {
+        return DropdownMenuItem<District>(
+          value: value,
+          child: Text(value.name),
+        );
+      }).toList(),
     );
   }
 }
@@ -798,13 +879,9 @@ class FormButton extends StatelessWidget {
           if (buttonType == 'send') {
             // send report
             buttonFunction();
-            // todo logic to send the report
           } else if (buttonType == 'cancel') {
             // show confirmation dialog
-            print('cancel');
             showCancelConfirmation(context);
-          } else {
-            // todo handle the error
           }
         },
       ),

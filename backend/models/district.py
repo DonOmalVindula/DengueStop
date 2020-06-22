@@ -52,9 +52,9 @@ class District(db.Model):
             District(8, 'Badulla'),
             District(8, 'Moneragala'),
             # western province
-            District(8, 'Colombo'),
-            District(8, 'Gampaha'),
-            District(8, 'Kalutara'),
+            District(9, 'Colombo'),
+            District(9, 'Gampaha'),
+            District(9, 'Kalutara'),
         ]
         # bulk insert operation
         db.session.bulk_save_objects(objects)
