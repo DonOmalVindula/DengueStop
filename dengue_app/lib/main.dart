@@ -21,7 +21,6 @@ void main() {
       // todo add other routing components
       '/': (context) => Login(),
       'signup': (context) => Signup(),
-      'login': (context) => Login(),
       'home': (context) => Home(),
       'report_incident': (context) => ReportIncident(),
       'reports': (context) => Reports(),

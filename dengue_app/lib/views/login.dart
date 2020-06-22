@@ -126,6 +126,9 @@ class _LoginFormState extends State<LoginForm> {
       var result =
           await userService.loginUser(username: username, password: password);
       if (result == true) {
+//      resetting text fields
+        telephoneController.text = '';
+        passwordController.text = '';
         Navigator.pushNamed(context, 'home');
       } else {
         // todo handle error messages for each instance
