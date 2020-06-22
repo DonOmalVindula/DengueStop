@@ -1,3 +1,4 @@
+import 'package:dengue_app/models/org_unit.dart';
 import 'package:dengue_app/models/user.dart';
 import 'package:dengue_app/services/user_service.dart';
 import 'package:flutter/material.dart';
@@ -194,7 +195,6 @@ class _IncidentFormFieldState extends State<IncidentFormField> {
 
   setPatientDob(DateTime dob) {
     incident.patientDob = dob;
-    print(dob);
   }
 
   setIncidentDescription(String description) {
@@ -218,9 +218,10 @@ class _IncidentFormFieldState extends State<IncidentFormField> {
     // initially report is not verified, therefore status zero. For all statuses check incident.dart file
     incident.isVerified = 0;
     // verified by will be null, which means no admin have verified it
-    // todo date validation properly
-    // todo get orgId based on province and district and plug here
-    incident.orgId = 1;
+    // getting the org unit based on province and district
+    incident.orgId = 0;
+    OrgUnit incidentOrg = await dataService.getIncidentOrgUnit(incident.province, incident.district);
+    incident.orgId = incidentOrg.id;
     if (await incidentService.createReport(incident)) {
       showReportCreatedAlert(context);
     } else {
@@ -313,7 +314,6 @@ class _IncidentFormFieldState extends State<IncidentFormField> {
                       }),
                 ),
                 SizedBox(width: 20.0),
-                // todo handle null validation for dynamic district and province dropdowns
                 Expanded(
                     child: FutureBuilder<List<District>>(
                         future: districtData,
@@ -406,59 +406,6 @@ class IncidentFormButtons extends StatelessWidget {
   }
 }
 
-// custom dropdown created for province, district and gender
-class CustomDropdown extends StatefulWidget {
-  final List<String> dropdownData;
-  final selectFunction;
-  final String label;
-  String selectedData;
-  CustomDropdown(
-      {Key key,
-      this.dropdownData,
-      this.selectedData,
-      this.selectFunction,
-      this.label})
-      : super(key: key);
-
-  @override
-  _CustomDropdownState createState() => _CustomDropdownState();
-}
-
-class _CustomDropdownState extends State<CustomDropdown> {
-  // todo get rid of custom dropdown
-  String selectedData = '';
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: selectedData,
-      icon: Icon(Icons.keyboard_arrow_down),
-      iconSize: 30,
-      elevation: 16,
-      decoration: InputDecoration(
-          labelText: widget.label,
-          labelStyle: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black)),
-//        decoration: InputDecoration.collapsed(
-//          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(50.0)))
-//        ),
-      validator: (value) => value.isEmpty ? 'Required' : null,
-      style: TextStyle(color: Colors.black, fontFamily: 'Raleway'),
-      onChanged: (String newValue) {
-        setState(() {
-          selectedData = newValue;
-          widget.selectFunction(newValue);
-        });
-      },
-      items: widget.dropdownData.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
-  }
-}
-
 class ProvinceDropdown extends StatefulWidget {
   final setProvinceFunction;
   final List<Province> provinceList;
@@ -471,6 +418,14 @@ class ProvinceDropdown extends StatefulWidget {
 
 class _ProvinceDropdownState extends State<ProvinceDropdown> {
   Province selectedProvince;
+
+  String provinceValidator() {
+    if(selectedProvince == null) {
+      return 'Required';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<Province>(
@@ -480,7 +435,7 @@ class _ProvinceDropdownState extends State<ProvinceDropdown> {
       elevation: 16,
       decoration:
           InputDecoration(labelText: 'Province', labelStyle: formLabelStyle),
-      validator: (value) => selectedProvince.id == 0 ? 'Required' : null,
+      validator: (value) => provinceValidator(),
       onChanged: (Province newValue) {
         setState(() {
           selectedProvince = newValue;
@@ -515,6 +470,13 @@ class DistrictDropdown extends StatefulWidget {
 
 class _DistrictDropdownState extends State<DistrictDropdown> {
   District selectedDistrict;
+  String districtValidator() {
+    if(selectedDistrict == null) {
+      return 'Required';
+    }
+    return null;
+  }
+  // todo fix bug on changing already selected dropdowns
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<District>(
@@ -524,8 +486,7 @@ class _DistrictDropdownState extends State<DistrictDropdown> {
       elevation: 16,
       decoration:
           InputDecoration(labelText: 'District', labelStyle: formLabelStyle),
-      validator: (value) => selectedDistrict.id.isNaN ? 'Required' : null,
-      style: TextStyle(color: Colors.black, fontFamily: 'Raleway'),
+      validator: (value) => districtValidator(),
       onChanged: (District newValue) {
         setState(() {
           selectedDistrict = newValue;
@@ -619,8 +580,6 @@ class _GetLocationButtonState extends State<GetLocationButton> {
       widget.textController.text = locationName;
       return true;
     } else {
-      // todo notification sticker to say an error has occured
-      print("Error has occured");
       return false;
     }
   }
@@ -639,7 +598,6 @@ class _GetLocationButtonState extends State<GetLocationButton> {
           padding: EdgeInsets.symmetric(vertical: 13, horizontal: 15),
           onPressed: () async {
             bool result = await getLocation();
-            print(result);
             setState(() {
               // changes color based on whether the location is retrieved successfully or not
               btnColor = result == true ? Colors.green : Colors.red;
@@ -705,16 +663,36 @@ class GenderDropdown extends StatefulWidget {
 }
 
 class _GenderDropdownState extends State<GenderDropdown> {
-  String selectedGender = 'Male';
+  String selectedGender = '';
   List<String> genderDropdown = ['', 'Male', 'Female'];
 
   @override
   Widget build(BuildContext context) {
-    return CustomDropdown(
-      dropdownData: genderDropdown,
-      selectedData: selectedGender,
-      selectFunction: widget.setGenderFunction,
-      label: 'Gender',
+    return DropdownButtonFormField<String>(
+      value: selectedGender,
+      icon: Icon(Icons.keyboard_arrow_down),
+      iconSize: 30,
+      elevation: 16,
+      decoration: InputDecoration(
+          labelText: 'Gender',
+          labelStyle: formLabelStyle),
+//        decoration: InputDecoration.collapsed(
+//          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(50.0)))
+//        ),
+      validator: (value) => value.isEmpty ? 'Required' : null,
+      style: TextStyle(color: Colors.black, fontFamily: 'Raleway'),
+      onChanged: (String newValue) {
+        setState(() {
+          selectedGender = newValue;
+          widget.setGenderFunction(newValue);
+        });
+      },
+      items: genderDropdown.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
     );
   }
 }
@@ -766,7 +744,7 @@ class _BirthDatePickerState extends State<BirthDatePicker> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text('Date of Birth', style: formLabelStyle),
-              SizedBox(height: 5),
+              SizedBox(height: 1),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[

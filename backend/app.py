@@ -249,6 +249,33 @@ def get_districts():
         return make_response('Request Forbidden', 403)
 
 
+@ app.route('/get_patient_status_list', methods=['GET'])
+def get_patient_status_list():
+    # checking for authentication
+    auth_res = authenticate_token(request.headers['authorization'])
+    if(auth_res != False):
+        # returns all the procinces in the db
+        patientStatus = PatientStatus.query.all()
+        db.session.commit()
+        result = patient_statuses_schema.dump(patientStatus)
+        return jsonify(result)
+    else:
+        return make_response('Request Forbidden', 403)
+
+@ app.route('/get_org_unit/<province>/<district>', methods=['GET'])
+def get_incident_org_unit(province, district):
+    # checking for authentication
+    auth_res = authenticate_token(request.headers['authorization'])
+    if(auth_res != False):
+        # returns all the procinces in the db
+        orgUnit = OrgUnit.query.filter_by(
+            province=province, district=district).first()
+        db.session.commit()
+        result = org_unit_schema.dump(orgUnit)
+        return jsonify(result)
+    else:
+        return make_response('Request Forbidden', 403)
+
 # running server
 if __name__ == '__main__':
     app.run(debug=True)

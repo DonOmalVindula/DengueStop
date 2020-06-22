@@ -1,7 +1,9 @@
+import 'package:dengue_app/models/status.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dengue_app/models/incident.dart';
 import 'package:dengue_app/services/incident_service.dart';
+import 'package:dengue_app/services/data_service.dart';
 
 class Reports extends StatefulWidget {
   @override
@@ -10,11 +12,14 @@ class Reports extends StatefulWidget {
 
 class _ReportsState extends State<Reports> {
   final IncidentService incidentService = IncidentService();
+  final DataService dataService = DataService();
   Future<List<Incident>> futureIncidentList;
+  Future<List<Status>> futurePatientStatusList;
   @override
   void initState() {
     super.initState();
     futureIncidentList = incidentService.getIncidentsByUser();
+    futurePatientStatusList = dataService.getPatientStatusList();
   }
 
   @override
@@ -44,11 +49,11 @@ class _ReportsState extends State<Reports> {
                 ),
                 Expanded(
                   flex: 13,
-                  child: FutureBuilder<List<Incident>>(
-                    future: futureIncidentList,
+                  child: FutureBuilder(
+                    future: Future.wait([futureIncidentList, futurePatientStatusList]),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          return ReportList(incidentList: snapshot.data,);
+                          return ReportList(incidentList: snapshot.data[0], patientStatusList: snapshot.data[1]);
                         } else if (snapshot.hasError) {
                           return Text("${snapshot.error}");
                         } else {
@@ -72,8 +77,8 @@ class _ReportsState extends State<Reports> {
 
 class ReportList extends StatelessWidget {
   final List<Incident> incidentList;
-
-  ReportList({this.incidentList});
+  final List<Status> patientStatusList;
+  ReportList({this.incidentList, this.patientStatusList});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +93,7 @@ class ReportList extends StatelessWidget {
               child: ListView.builder(
                   itemCount: incidentList.length,
                   itemBuilder: (context, index) {
-                    return ReportCard(incident: incidentList[index]);
+                    return ReportCard(incident: incidentList[index], statusList: patientStatusList);
                   }),
             ),
           )
@@ -176,8 +181,8 @@ class ReportCard extends StatelessWidget {
       fontSize: 16.0, fontWeight: FontWeight.w500, color: Colors.black);
 
   final Incident incident;
-
-  ReportCard({this.incident});
+  final List<Status> statusList;
+  ReportCard({this.incident, this.statusList});
 
 
   Text getVerificationStatusText(isVerified) {
@@ -206,70 +211,31 @@ class ReportCard extends StatelessWidget {
     }
   }
 
-  Text getPatientStatusText(status) {
+  Text getPatientStatusText(int status) {
     // returns the text with styling based on the patient status id
-    switch(status) {
-      case 1: {
-        return Text('Pending Verification',
-            style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.deepOrange[500]));
+    String statusName = '';
+    Color statusColor = Colors.black;
+    // this will change the status text color based on the status
+    List<Color> colorList = [
+      Colors.black,
+      Colors.deepOrange[500],
+      Colors.orange[500],
+      Colors.green[700],
+      Colors.teal[700],
+      Colors.blue[500],
+      Colors.red[500],
+      Colors.orange[500]
+    ];
+    statusList.forEach((element) {
+      if (element.id == status) {
+        statusName = element.status;
       }
-      break;
-      case 2: {
-        return Text('Pending Treatment',
-            style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.orange[500]));
-      }
-      break;
-      case 3: {
-        return Text('Under Treatment',
-            style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.green[700]));
-      }
-      break;
-      case 4: {
-        return Text('Recovering',
-            style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.teal[700]));
-      }
-      break;
-      case 5: {
-        return Text('Recovered ',
-            style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.blue[500]));
-      }
-      break;
-      case 6: {
-        return Text('Death ',
-            style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.red[500]));
-      }
-      break;
-      case 7: {
-        return Text('Declined ',
-            style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.w700,
-                color: Colors.orange[500]));
-      }
-      break;
-      default: {
-        return null;
-      }
-      break;
-    }
+    });
+    return Text(statusName,
+        style: TextStyle(
+            fontSize: 15.0,
+            fontWeight: FontWeight.w700,
+            color: colorList[status]));
   }
 
   Text getPatientGenderText(gender) {
