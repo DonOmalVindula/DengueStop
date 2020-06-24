@@ -4,7 +4,7 @@ matrix:
     - language: dart
       dart: stable
       stage: Flutter Test
-      before_script:
+      before_install:
         - "cd dengue_app"
       addons:
         apt:
