@@ -1,9 +1,10 @@
-language: dart
 os: linux
 matrix:
   include:
-    - stage: Flutter Test
-    - before_script:
+    - language: dart
+      dart: stable
+      stage: Flutter Test
+      before_script:
         - "cd dengue_app"
       addons:
         apt:
