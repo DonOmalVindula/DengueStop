@@ -1,14 +1,10 @@
----
 matrix:
   include:
+    - stage: Flutter Test
     - before_script:
         - "cd dengue_app"
-      dart:
-        - stable
-      dart_task:
-        - dartfmt
       language: dart
-      dist: xenial
+      os: linux
       addons:
         apt:
           packages:
