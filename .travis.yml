@@ -3,6 +3,10 @@ matrix:
   include:
     - before_script:
         - "cd dengue_app"
+      dart:
+        - stable
+      dart_task:
+        - dartfmt
       language: dart
       dist: xenial
       addons:
