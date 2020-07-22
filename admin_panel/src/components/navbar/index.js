@@ -43,12 +43,12 @@ class Navbar extends Component {
                     >
                         <MDBNavbarNav left>
                             <MDBNavItem>
-                                <MDBNavLink to="/">Home</MDBNavLink>
+                                <MDBNavLink to="home">Home</MDBNavLink>
                             </MDBNavItem>
                             <MDBNavItem>
                                 <MDBNavLink to="metric">Metrics</MDBNavLink>
                             </MDBNavItem>
-                            <MDBNavItem active>
+                            <MDBNavItem>
                                 <MDBNavLink to="patient">Patients</MDBNavLink>
                             </MDBNavItem>
                             <MDBNavItem>
@@ -83,7 +83,7 @@ class Navbar extends Component {
                     </MDBCollapse>
                 </MDBNavbar>
                 <Switch>
-                    <Route exact path="/" component={Home} />
+                    <Route exact path="/home" component={Home} />
                     <Route path="/metric" component={Metric} />
                     <Route path="/patient" component={Patient} />
                     <Route path="/event" component={Event} />
