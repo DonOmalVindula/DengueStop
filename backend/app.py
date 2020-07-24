@@ -1021,6 +1021,29 @@ def login_admin_user():
         print("Unexpected error")
         raise
 
+@ app.route('/create_admin_user', methods=['POST'])
+def create_admin_user():
+    # signup function for admin users
+    try:
+        email = request.json['email'].encode("utf-8")
+        name  = request.json['name'].encode("utf-8")
+        contact  = request.json['contact'].encode("utf-8")
+        password  = request.json['password'].encode("utf-8")
+        org_id  = request.json['orgId'].encode("utf-8")
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        new_admin = Admin(email, name, contact, hashed_password, org_id)
+        db.session.add(new_admin)
+        db.session.commit()
+        return user_schema.jsonify(new_admin)
+
+    except IOError:
+        print("I/O error")
+    except ValueError:
+        print("Value Error")
+    except:
+        print("Unexpected error")
+        raise
+
 # running server
 if __name__ == '__main__':
     app.run(debug=True)
