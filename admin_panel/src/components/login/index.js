@@ -27,7 +27,7 @@ const Login = (props) => {
 
         if (emailValidate && passwordValidate) {
             authService.loginAdminUser(username, password).then((res) => {
-                console.log(res.login_res);
+                console.log(res);
 
                 if (res.login_res === true) {
                     //login

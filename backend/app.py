@@ -1008,7 +1008,15 @@ def login_admin_user():
         if(loginAdmin != {} and loginAdmin != None):
             userPass = loginAdmin.password.encode("utf-8")
             if bcrypt.checkpw(password, userPass):
-                return make_response({"login_res": True}, 200)
+                loggedInUser = {
+                    "login_res": True,
+                    "id": loginAdmin.id,
+                    "email": loginAdmin.email,
+                    "name" : loginAdmin.name,
+                    "contact": loginAdmin.contact,
+                    "org_id": loginAdmin.org_id
+                }
+                return make_response(loggedInUser, 200)
             else:
                 return make_response({"login_res": False}, 200)
         return make_response({"login_res": False}, 200)
