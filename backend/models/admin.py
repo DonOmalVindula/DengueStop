@@ -13,7 +13,7 @@ class Admin(db.Model):
     email = db.Column(db.String(45), unique=True, nullable=False)
     name = db.Column(db.String(45), nullable=False)
     contact = db.Column(db.String(10), nullable=False)
-    password = db.Column(db.String(45), nullable=False)
+    password = db.Column(db.String(70), nullable=False)
     salt = db.Column(db.String(45), nullable=False)
     org_id = db.Column(db.Integer, nullable=False)
 

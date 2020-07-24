@@ -18,6 +18,7 @@ from database import ma
 import jwt
 from datetime import datetime
 import calendar
+import bcrypt
 from dateutil.relativedelta import relativedelta
 import os
 
@@ -986,6 +987,31 @@ def get_province_vs_status_count(date_range):
 
             return jsonify(provinceStatusArray)
         return make_response('Incident Breakdown Not Found', 404)
+
+    except IOError:
+        print("I/O error")
+    except ValueError:
+        print("Value Error")
+    except:
+        print("Unexpected error")
+        raise
+
+@ app.route('/login_admin_user', methods=['POST'])
+def login_admin_user():
+    # login function for admin users
+    try:
+        email = request.json['user'].encode("utf-8")
+        password  = request.json['pass'].encode("utf-8")
+
+        loginAdmin = Admin.query.filter_by(email=email).first()
+        db.session.commit()
+        if(loginAdmin != {} and loginAdmin != None):
+            userPass = loginAdmin.password.encode("utf-8")
+            if bcrypt.checkpw(password, userPass):
+                return make_response({"login_res": True}, 200)
+            else:
+                return make_response({"login_res": False}, 200)
+        return make_response({"login_res": False}, 200)
 
     except IOError:
         print("I/O error")
