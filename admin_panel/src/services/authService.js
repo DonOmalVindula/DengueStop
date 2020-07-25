@@ -1,5 +1,4 @@
 import FetchApi from "../utils/apiProviderService";
-import bcrypt from "bcryptjs";
 
 class AuthService {
     getUserBaseBreakdown() {

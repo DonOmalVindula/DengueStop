@@ -9,6 +9,7 @@
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "core-js": "^3",
+    "history": "^5.0.0",
     "leaflet": "^1.6.0",
     "mdbreact": "^4.27.0",
     "react": "^16.13.1",

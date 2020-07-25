@@ -1009,14 +1009,16 @@ def login_admin_user():
             userPass = loginAdmin.password.encode("utf-8")
             if bcrypt.checkpw(password, userPass):
                 loggedInUser = {
-                    "login_res": True,
                     "id": loginAdmin.id,
                     "email": loginAdmin.email,
                     "name" : loginAdmin.name,
                     "contact": loginAdmin.contact,
                     "org_id": loginAdmin.org_id
                 }
-                return make_response(loggedInUser, 200)
+                secret_key = SECRET_KEY
+                token = jwt.encode({'user': loginAdmin.email, 'userId': loginAdmin.id, 'exp': datetime.utcnow(
+                ) + relativedelta(hours=1)}, secret_key)
+                return jsonify({'token': token.decode('UTF-8'),'login_res': True, 'userData': loggedInUser})
             else:
                 return make_response({"login_res": False}, 200)
         return make_response({"login_res": False}, 200)
