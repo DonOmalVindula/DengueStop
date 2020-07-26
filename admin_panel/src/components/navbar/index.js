@@ -37,8 +37,6 @@ const Navbar = (props) => {
     };
 
     const logoutPrompt = () => {
-        console.log(logoutDialogue);
-
         setLogoutDialogue(true);
     };
 
@@ -49,50 +47,48 @@ const Navbar = (props) => {
 
     const LogoutPromptDialogue = (props) => {
         return (
-            <MDBContainer>
-                <MDBModal
-                    modalStyle="danger"
-                    className="text-white"
-                    size="sm"
-                    centered
-                    position="top-center"
-                    isOpen={logoutDialogue}
-                    toggle={() => setLogoutDialogue(false)}
+            <MDBModal
+                modalStyle="danger"
+                className="text-white"
+                size="sm"
+                centered
+                position="top-center"
+                isOpen={logoutDialogue}
+                toggle={() => setLogoutDialogue(false)}
+            >
+                <MDBModalHeader
+                    className="text-center"
+                    titleClass="w-100"
+                    tag="p"
                 >
-                    <MDBModalHeader
-                        className="text-center"
-                        titleClass="w-100"
-                        tag="p"
+                    Logging Out?
+                </MDBModalHeader>
+                <MDBModalBody className="text-center">
+                    <MDBIcon
+                        icon="times"
+                        size="4x"
+                        className="animated rotateIn"
+                    />
+                    <h5>Do you want to log out?</h5>
+                </MDBModalBody>
+                <MDBModalFooter className="justify-content-center">
+                    <MDBBtn
+                        color="danger"
+                        onClick={() => {
+                            logoutUser();
+                        }}
                     >
-                        Logging Out?
-                    </MDBModalHeader>
-                    <MDBModalBody className="text-center">
-                        <MDBIcon
-                            icon="times"
-                            size="4x"
-                            className="animated rotateIn"
-                        />
-                        <h5>Do you want to log out?</h5>
-                    </MDBModalBody>
-                    <MDBModalFooter className="justify-content-center">
-                        <MDBBtn
-                            color="danger"
-                            onClick={() => {
-                                logoutUser();
-                            }}
-                        >
-                            Yes
-                        </MDBBtn>
-                        <MDBBtn
-                            color="danger"
-                            outline
-                            onClick={() => setLogoutDialogue(false)}
-                        >
-                            No
-                        </MDBBtn>
-                    </MDBModalFooter>
-                </MDBModal>
-            </MDBContainer>
+                        Yes
+                    </MDBBtn>
+                    <MDBBtn
+                        color="danger"
+                        outline
+                        onClick={() => setLogoutDialogue(false)}
+                    >
+                        No
+                    </MDBBtn>
+                </MDBModalFooter>
+            </MDBModal>
         );
     };
 
