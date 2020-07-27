@@ -55,7 +55,7 @@ const Event = () => {
             </MDBRow>
             <p className="text-center p-0 m-0">
                 Click on <MDBIcon icon="angle-right mx-1" /> icon to view more
-                information or to change status of the patient
+                information or to change status of the event
             </p>
             <MDBRow>
                 <EventList
