@@ -124,15 +124,19 @@ const NewEventModal = (props) => {
     const [startDate, setStartDate] = useState(new Date());
     const mapCenter = [7.9, 80.747452];
     const [eventCoord, setEventCood] = useState([7.9, 80.747452]);
+    const eventService = new EventService();
 
     useEffect(() => {
         setIsOpen(props.isOpen);
     });
 
     const addNewEvent = (eventData) => {
-        console.log(eventData);
-        console.log(startDate);
-        console.log(eventCoord);
+        var eventObject = eventData;
+        eventObject.start_time = startDate;
+        eventObject.location_lat = eventCoord[0];
+        eventObject.location_long = eventCoord[1];
+        console.log(eventObject);
+        eventService.createEvent(eventObject);
     };
 
     const changeCoordinateOnClick = (event) => {
