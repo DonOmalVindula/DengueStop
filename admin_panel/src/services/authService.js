@@ -12,7 +12,7 @@ class AuthService {
             })
             .catch((err) => {
                 console.log("error : ", err);
-                return null;
+                return err;
             });
     }
 
@@ -31,7 +31,7 @@ class AuthService {
             })
             .catch((err) => {
                 console.log("error : ", err);
-                return null;
+                return err;
             });
     }
 

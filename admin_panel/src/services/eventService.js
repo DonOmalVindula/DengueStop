@@ -13,7 +13,7 @@ class EventService {
             })
             .catch((err) => {
                 console.log("error : ", err);
-                return null;
+                throw err;
             });
     }
 
@@ -37,7 +37,7 @@ class EventService {
             })
             .catch((err) => {
                 console.log("error : ", err);
-                return null;
+                throw err;
             });
     }
 
@@ -56,7 +56,7 @@ class EventService {
             })
             .catch((err) => {
                 console.log("error : ", err);
-                return false;
+                throw err;
             });
     }
 
@@ -91,7 +91,7 @@ class EventService {
             })
             .catch((err) => {
                 console.log("error : ", err);
-                return null;
+                throw err;
             });
     }
 }

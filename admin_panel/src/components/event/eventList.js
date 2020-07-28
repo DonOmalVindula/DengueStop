@@ -15,6 +15,7 @@ import {
     MDBDropdownMenu,
     MDBDropdownItem,
     MDBIcon,
+    MDBNotification,
 } from "mdbreact";
 import DataTable from "react-data-table-component";
 import Moment from "react-moment";
@@ -24,6 +25,11 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import {
+    NotificationContainer,
+    NotificationManager,
+} from "react-notifications";
+import "react-notifications/lib/notifications.css";
 
 const EventList = (props) => {
     const currentUser = getSession();
@@ -83,10 +89,15 @@ const EventList = (props) => {
 
     return (
         <MDBCard className="patient-table-container">
-            <NewEventModal isOpen={addEventModal} />
+            <NotificationContainer />
+            <NewEventModal
+                isOpen={addEventModal}
+                setIsOpen={setAddEventModal}
+            />
             <MDBRow className="w-100">
-                <MDBCol>
+                <MDBCol className="p-2">
                     <MDBBtn
+                        className="float-right"
                         size="lg"
                         color="primary"
                         onClick={() => setAddEventModal(true)}
@@ -96,6 +107,7 @@ const EventList = (props) => {
                 </MDBCol>
             </MDBRow>
             <DataTable
+                noHeader={true}
                 keyField={"ID"}
                 columns={columns}
                 data={eventArray}
@@ -120,10 +132,12 @@ const EventList = (props) => {
 };
 
 const NewEventModal = (props) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [startDate, setStartDate] = useState(new Date());
+    const isOpen = props.isOpen;
+    const setIsOpen = props.setIsOpen;
     const mapCenter = [7.9, 80.747452];
+    const [startDate, setStartDate] = useState(new Date());
     const [eventCoord, setEventCood] = useState([7.9, 80.747452]);
+    const [mapTouched, setMapTouched] = useState(false);
     const eventService = new EventService();
 
     useEffect(() => {
@@ -132,20 +146,44 @@ const NewEventModal = (props) => {
 
     const addNewEvent = (eventData) => {
         var eventObject = eventData;
-        eventObject.start_time = startDate;
+        eventObject.start_time = startDate.getTime();
         eventObject.location_lat = eventCoord[0];
         eventObject.location_long = eventCoord[1];
-        console.log(eventObject);
-        eventService.createEvent(eventObject);
+        eventService
+            .createEvent(eventObject)
+            .then((res) => {
+                console.log(res);
+
+                NotificationManager.success(
+                    "Event Created Successfully",
+                    "Success",
+                    5000
+                );
+                setIsOpen(false);
+            })
+            .catch((err) => {
+                console.log(err);
+                NotificationManager.error(
+                    "Event Creation Failed. Please Try Again",
+                    "Failed",
+                    5000
+                );
+            });
+    };
+
+    const validateForm = () => {
+        return !mapTouched;
     };
 
     const changeCoordinateOnClick = (event) => {
+        setMapTouched(true);
         const lat = event.latlng.lat;
         const long = event.latlng.lng;
         setEventCood([lat, long]);
     };
 
     const changeCoordinateOnDrag = (event) => {
+        setMapTouched(true);
         const lat = event.target._latlng.lat;
         const long = event.target._latlng.lng;
         setEventCood([lat, long]);
@@ -351,7 +389,11 @@ const NewEventModal = (props) => {
                             </MDBRow>
                         </MDBModalBody>
                         <MDBModalFooter>
-                            <MDBBtn type="submit" color="primary">
+                            <MDBBtn
+                                type="submit"
+                                disabled={validateForm()}
+                                color="primary"
+                            >
                                 Save Event
                             </MDBBtn>
                             <MDBBtn
