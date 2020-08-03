@@ -6,7 +6,7 @@ class EventService {
 
   List<Event> eventList = List<Event>();
 
-  Future<List<Event>> getAllEvents(String province, String district) async {
+  Future<List<Event>> getAllEvents() async {
     var url = 'get_all_events';
     List<dynamic> responseData = new List<dynamic>();
     var responseJson = await apiProvider.get(url);

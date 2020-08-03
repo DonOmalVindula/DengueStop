@@ -56,19 +56,19 @@ class Event {
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
         id: json['id'] as int,
-        name: json['province'] as String,
-        venue: json['district'] as String,
+        name: json['name'] as String,
+        venue: json['venue'] as String,
         locationLat: json['location_lat'] as double,
         locationLong: json['location_long'] as double,
         // parsing string values to DateTime format
-        startTime: DateFormat('yyyy-M-dd').parse(json['patient_dob']) as DateTime,
-        dateCreated: DateTime.parse(json['reported_time']) as DateTime,
-        duration: json['description'] as double,
-        coordinatorName: json['reported_user_id'] as String,
-        coordinatorContact: json['patient_status_id'] as String,
-        description: json['verified_by'] as String,
-        statusId: json['is_verified'] as int,
-        createdBy: json['verified_by'] as int,
+        startTime: DateTime.parse(json['start_time']) as DateTime,
+        dateCreated: DateTime.parse(json['date_created']) as DateTime,
+        duration: json['duration'] as double,
+        coordinatorName: json['coordinator_name'] as String,
+        coordinatorContact: json['coordinator_contact'] as String,
+        description: json['description'] as String,
+        statusId: json['status_id'] as int,
+        createdBy: json['created_by'] as int,
         orgId: json['org_id'] as int);
   }
 }
